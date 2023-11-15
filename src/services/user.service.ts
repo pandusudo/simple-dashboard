@@ -29,14 +29,14 @@ export class UserService {
     payload: {
       [x: string]: any;
     },
-    excludePassword: boolean = false
+    includePassword: boolean = false
   ): Promise<users | Omit<users, 'password'>> {
     try {
       const user = await prisma.users.findFirst({
         where: payload,
       });
 
-      if (user && !excludePassword) exclude(user, ['password']);
+      if (user && !includePassword) exclude(user, ['password']);
 
       return user;
     } catch (error) {
