@@ -17,6 +17,7 @@ model users {
   password  String?
   login_counter Int @default(0)
   sessions  sessions[]
+  tokens  user_tokens[]
   last_session  DateTime?
   verification_sent_at  DateTime?
   verified_at DateTime?
@@ -35,4 +36,16 @@ model sessions {
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   deleted_at DateTime?
+}
+
+model user_tokens {
+  id         Int        @id @default(autoincrement())
+  user_id     Int
+  token      String     @unique
+  type       String     // You can specify the type of token (e.g., "email_verification")
+  expiredAt  DateTime
+  createdAt  DateTime   @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at DateTime?
+  user       users       @relation(fields: [user_id], references: [id])
 }

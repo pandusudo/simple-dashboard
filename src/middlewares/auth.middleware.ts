@@ -9,8 +9,6 @@ export class AuthMiddleware {
     next: NextFunction
   ): Promise<void> {
     const errors = await validateDto(SignupDTO, req.body);
-    console.log(errors);
-
     if (errors.length > 0) {
       res.status(400).json(errors);
     } else {
