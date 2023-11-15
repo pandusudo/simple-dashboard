@@ -1,9 +1,10 @@
 import crypto from 'crypto';
 
 const algorithm = 'aes-256-ctr';
-const secretKey = 'secretkey';
+const secretKey = process.env.HASH_SECRET;
+const salt = process.env.SALT;
 
-const derivedKey = crypto.scryptSync(secretKey, 'test', 32);
+const derivedKey = crypto.scryptSync(secretKey, salt, 32);
 
 export function encryptToken(token: string): string {
   const iv = crypto.randomBytes(16); // Generate a random IV
