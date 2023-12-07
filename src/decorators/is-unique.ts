@@ -21,11 +21,13 @@ class IsUniqueConstraint implements ValidatorConstraintInterface {
       ? this.options.getService()
       : undefined;
 
-    if (!service || !service.findOneBy) {
+    if (!service || !service.findOneWhere) {
       return false;
     }
 
-    const existingEntity = await service.findOneBy({ [propertyName]: value });
+    const existingEntity = await service.findOneWhere({
+      [propertyName]: value,
+    });
     return !existingEntity;
   }
 
@@ -34,7 +36,7 @@ class IsUniqueConstraint implements ValidatorConstraintInterface {
       ? this.options.getService()
       : undefined;
 
-    if (!service || !service.findOneBy) {
+    if (!service || !service.findOneWhere) {
       return 'Invalid service provided for IsUnique validation';
     }
 

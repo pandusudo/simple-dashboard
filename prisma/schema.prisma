@@ -10,42 +10,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model users {
+model User {
   id  Int @id @default(autoincrement())
   email String  @unique
-  name  String?
+  name  String
   password  String?
   login_counter Int @default(0)
-  sessions  sessions[]
-  tokens  user_tokens[]
   last_session  DateTime?
-  verification_sent_at  DateTime?
+  sessions  Session[]
+  tokens  UserToken[]
   verified_at DateTime?
   signed_up_at  DateTime?
+  signed_in_at  DateTime?
+  is_logged_in  Boolean @default(false)
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   deleted_at DateTime?
+
+  @@map(name: "users")
 }
 
-model sessions {
+model Session {
   id Int @id @default(autoincrement())
-  login_time  DateTime?
-  logout_time DateTime?
-  user  users  @relation(fields: [user_id], references: [id])
+  session_start  DateTime
+  expired_at DateTime
+  hashed_session_id  String
+  user  User  @relation(fields: [user_id], references: [id])
   user_id Int
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   deleted_at DateTime?
+
+  @@map(name: "sessions")
 }
 
-model user_tokens {
+model UserToken {
   id         Int        @id @default(autoincrement())
   user_id     Int
   token      String     @unique
   type       String     // You can specify the type of token (e.g., "email_verification")
-  expiredAt  DateTime
-  createdAt  DateTime   @default(now())
+  active  Boolean @default(true)
+  expired_at  DateTime
+  created_at  DateTime   @default(now())
   updated_at  DateTime  @updatedAt
   deleted_at DateTime?
-  user       users       @relation(fields: [user_id], references: [id])
+  user       User       @relation(fields: [user_id], references: [id])
+
+  @@map(name: "user_tokens")
 }

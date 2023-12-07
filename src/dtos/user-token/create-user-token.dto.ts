@@ -1,6 +1,7 @@
-export class CreateUserTokenDto {
+export class CreateUserTokenDTO {
   user_id: number;
   token: string;
   type: string;
-  expiredAt: Date;
+  expired_at: Date;
+  active: boolean;
 }

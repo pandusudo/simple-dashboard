@@ -12,7 +12,46 @@ export class AuthController {
         'Verification email sent. Please check your email to verify your address before using the app.'
       );
     } catch (error) {
-      res.status(500).send('Internal Server Error!');
+      ResponseHandler.handleErrors(res, error);
+    }
+  }
+
+  static async signin(req: Request, res: Response): Promise<void> {
+    try {
+      const data = await AuthService.signin(req.body);
+      const { hashedSessionId, expiryDate, ...result } = data;
+      res.cookie('session_id', hashedSessionId, {
+        httpOnly: true,
+      });
+      ResponseHandler.success(res, 200, "You're signed in!", result);
+    } catch (error) {
+      ResponseHandler.handleErrors(res, error);
+    }
+  }
+
+  static async signinGoogle(req: Request, res: Response): Promise<void> {
+    try {
+      const data = await AuthService.signinGoogle(req.body);
+      const { hashedSessionId, expiryDate, ...result } = data;
+      res.cookie('session_id', hashedSessionId, {
+        httpOnly: true,
+      });
+      ResponseHandler.success(res, 200, "You're signed in!", result);
+    } catch (error) {
+      ResponseHandler.handleErrors(res, error);
+    }
+  }
+
+  static async logout(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.user.id;
+      await AuthService.logout(id);
+
+      res.clearCookie('session_id');
+
+      ResponseHandler.success(res, 200, "You're logged out!");
+    } catch (error) {
+      ResponseHandler.handleErrors(res, error);
     }
   }
 }

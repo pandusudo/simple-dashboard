@@ -1,29 +1,21 @@
-import crypto from 'crypto';
+import * as bcrypt from 'bcrypt';
+import { createHash } from 'crypto';
 
-const algorithm = 'aes-256-ctr';
-const secretKey = process.env.HASH_SECRET;
-const salt = process.env.SALT;
-
-const derivedKey = crypto.scryptSync(secretKey, salt, 32);
-
-export function encryptToken(token: string): string {
-  const iv = crypto.randomBytes(16); // Generate a random IV
-  const cipher = crypto.createCipheriv(algorithm, derivedKey, iv);
-
-  let encrypted = cipher.update(token, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-
-  return iv.toString('hex') + encrypted;
+export function hashWithBcrypt(password: string): string {
+  return bcrypt.hashSync(password, 10);
 }
 
-export function decryptToken(encryptedToken: string): string {
-  const iv = Buffer.from(encryptedToken.slice(0, 32), 'hex');
-  const encryptedText = encryptedToken.slice(32);
+export function validateBcryptHash(
+  password: string,
+  hash: string
+): Promise<boolean> {
+  return bcrypt.compare(password, hash);
+}
 
-  const decipher = crypto.createDecipheriv(algorithm, derivedKey, iv);
+export function hashWithCrypto(sessionId: string): string {
+  const hash = createHash('sha256');
+  hash.update(sessionId);
+  const hashedSessionId = hash.digest('hex');
 
-  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-
-  return decrypted;
+  return hashedSessionId;
 }

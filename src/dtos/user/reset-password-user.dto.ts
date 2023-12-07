@@ -1,30 +1,29 @@
 import {
   IsDefined,
-  IsEmail,
   IsNotEmpty,
   IsString,
   Matches,
   MinLength,
 } from 'class-validator';
-import { IsUnique } from '../../decorators/is-unique';
-import { UserService } from '../../services/user.service';
 import { IsSameAs } from '../../decorators/is-same-as';
 
-export class SignupDTO {
-  @IsEmail()
-  @IsDefined()
-  @IsNotEmpty()
-  @IsUnique({ getService: () => UserService })
-  email: string;
-
-  @IsNotEmpty()
-  @IsDefined()
+export class ResetPasswordUserDTO {
   @IsString()
-  name: string;
+  @MinLength(8)
+  @IsNotEmpty()
+  @IsDefined()
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+    {
+      message:
+        'password must contain at least one lowercase, one uppercase, one digit, and one special character',
+    }
+  )
+  old_password: string;
 
   @IsString()
-  @IsDefined()
   @IsNotEmpty()
+  @IsDefined()
   @MinLength(8)
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
@@ -43,7 +42,7 @@ export class SignupDTO {
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
     {
       message:
-        'reconfirm password must contain at least one lowercase, one uppercase, one digit, and one special character',
+        'peconfirm password must contain at least one lowercase, one uppercase, one digit, and one special character',
     }
   )
   @IsSameAs('password')

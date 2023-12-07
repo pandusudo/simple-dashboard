@@ -1,38 +1,58 @@
-import { PrismaClient, user_tokens } from '@prisma/client';
-import { CreateUserTokenDto } from 'dtos/user-token/create-user-token.dto';
-
-const prisma = new PrismaClient();
+import { Prisma, prisma } from '../configs/prisma';
+import { CreateUserTokenDTO } from '../dtos/user-token/create-user-token.dto';
+import { UserToken } from '../custom-types/user-token';
+import { throwError } from '../helpers/error-thrower';
 
 export class UserTokenService {
-  private static ServiceName = 'User Token';
-  static async getAllUserTokens(): Promise<user_tokens[]> {
-    const userTokens = await prisma.user_tokens.findMany();
-    return userTokens;
-  }
-
-  static async createUserToken(
-    payload: CreateUserTokenDto
-  ): Promise<user_tokens> {
+  private static serviceName: string = 'User Token';
+  static async getAll(): Promise<UserToken[]> {
     try {
-      const userToken = await prisma.user_tokens.create({ data: payload });
-
-      return userToken;
+      const userTokens = await prisma.userToken.findMany();
+      return userTokens;
     } catch (error) {
-      throw new Error(
-        `Something went wrong in the ${this.ServiceName} service`
-      );
+      throwError(error, this.serviceName);
     }
   }
 
-  static async findOneBy(payload: { [x: string]: any }): Promise<user_tokens> {
+  static async create(payload: CreateUserTokenDTO): Promise<UserToken> {
     try {
-      const userToken = await prisma.user_tokens.findFirst({
+      const userToken = await prisma.userToken.create({ data: payload });
+
+      return userToken;
+    } catch (error) {
+      throwError(error, this.serviceName);
+    }
+  }
+
+  static async findOneWhere(
+    payload: Prisma.UserTokenWhereInput,
+    orderBy: Prisma.UserTokenOrderByWithAggregationInput,
+    includeUser: boolean = false
+  ): Promise<UserToken> {
+    try {
+      const userToken = await prisma.userToken.findFirst({
         where: payload,
+        orderBy,
+        include: { user: includeUser },
       });
 
       return userToken;
     } catch (error) {
-      throw new Error('Something went wrong in the service');
+      throwError(error, this.serviceName);
+    }
+  }
+
+  static async updateManyWhere(
+    payload: Prisma.UserTokenWhereInput,
+    data: Prisma.UserTokenUpdateInput
+  ): Promise<void> {
+    try {
+      await prisma.userToken.updateMany({
+        where: payload,
+        data,
+      });
+    } catch (error) {
+      throwError(error, this.serviceName);
     }
   }
 }
