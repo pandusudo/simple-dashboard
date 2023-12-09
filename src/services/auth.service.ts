@@ -30,6 +30,7 @@ export class AuthService {
         signed_up_at: currentDate,
         is_logged_in: false,
         signed_in_at: null,
+        register_type: 'credential',
       });
 
       const token = generateRandomString();
@@ -72,7 +73,8 @@ export class AuthService {
         includePassword
       );
 
-      if (!user) throw new UnauthorizedError('Invalid email or password!');
+      if (!user || !user.password)
+        throw new UnauthorizedError('Invalid email or password!');
 
       const isCorrectPassword = validateBcryptHash(
         payload.password,
@@ -141,6 +143,7 @@ export class AuthService {
           verified_at: currentDate,
           is_logged_in: true,
           last_session: currentDate,
+          register_type: 'google',
         });
         userId = newUser.id;
         verifiedAt = newUser.verified_at;

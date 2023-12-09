@@ -22,6 +22,7 @@ model User {
   verified_at DateTime?
   signed_up_at  DateTime?
   signed_in_at  DateTime?
+  register_type  String
   is_logged_in  Boolean @default(false)
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
