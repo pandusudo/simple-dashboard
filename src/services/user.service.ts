@@ -204,7 +204,9 @@ export class UserService {
       const isInactive = !userToken.active;
 
       if (isExpired || isInactive)
-        throw new BadRequestError('Your token has expired');
+        throw new BadRequestError(
+          JSON.stringify({ message: 'Your token is expired' })
+        );
 
       let oldSession: Session = null;
       if (oldHashedSessionId) {

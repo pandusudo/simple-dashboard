@@ -76,8 +76,6 @@ export class SessionService {
       const isInactiveAuth =
         !session.user.signed_in_at || !session.user.is_logged_in;
 
-      console.log(isInactiveAuth);
-
       let isExpiredAuth = true;
       if (session.user.signed_in_at) {
         const expiryDate = authConfig.getExpiryDate(session.user.signed_in_at);
