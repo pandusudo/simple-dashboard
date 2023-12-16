@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ResponseHandler } from '../helpers/response-handler';
 import { SessionService } from '../services/sessions.service';
 import { UnauthorizedError } from '../helpers/errors/UnauthorizedError';
+import { cookieSettings } from '../configs/cookie';
 
 export class AuthMiddleware {
   static async isAuthenticated(
@@ -28,7 +29,7 @@ export class AuthMiddleware {
 
       // if new session created, update session id cookie with the new session id
       if (hashedSessionId !== session.hashed_session_id)
-        res.cookie('session_id', session.hashed_session_id, { httpOnly: true });
+        res.cookie('session_id', session.hashed_session_id, cookieSettings);
 
       next();
     } catch (error) {

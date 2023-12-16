@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { ResponseHandler } from '../helpers/response-handler';
+import { cookieSettings } from '../configs/cookie';
 
 export class AuthController {
   static async signup(req: Request, res: Response): Promise<void> {
@@ -20,9 +21,7 @@ export class AuthController {
     try {
       const data = await AuthService.signin(req.body);
       const { hashedSessionId, expiryDate, ...result } = data;
-      res.cookie('session_id', hashedSessionId, {
-        httpOnly: true,
-      });
+      res.cookie('session_id', hashedSessionId, cookieSettings);
       ResponseHandler.success(res, 200, "You're signed in!", result);
     } catch (error) {
       ResponseHandler.handleErrors(res, error);
@@ -33,9 +32,8 @@ export class AuthController {
     try {
       const data = await AuthService.signinGoogle(req.body);
       const { hashedSessionId, expiryDate, ...result } = data;
-      res.cookie('session_id', hashedSessionId, {
-        httpOnly: true,
-      });
+
+      res.cookie('session_id', hashedSessionId, cookieSettings);
       ResponseHandler.success(res, 200, "You're signed in!", result);
     } catch (error) {
       ResponseHandler.handleErrors(res, error);

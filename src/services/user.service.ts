@@ -22,13 +22,20 @@ export class UserService {
   static async getUserDashboard(): Promise<any> {
     const totalUsers = await prisma.user.count();
 
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
     const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
 
     const activeUsersToday = await prisma.session.findMany({
       where: {
         created_at: {
-          gte: currentDate,
+          gte: startOfDay,
+        },
+        expired_at: {
+          gt: currentDate,
+        },
+        user: {
+          is_logged_in: true,
         },
       },
       distinct: ['user_id'],
@@ -36,9 +43,10 @@ export class UserService {
 
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setHours(0, 0, 0, 0);
 
     const averageActiveSessionUsers = await prisma.session.groupBy({
-      by: ['user_id'],
+      by: ['created_at', 'user_id'],
       where: {
         session_start: {
           gte: sevenDaysAgo,
@@ -49,18 +57,27 @@ export class UserService {
       },
     });
 
-    const totalDays = averageActiveSessionUsers.length;
-    const totalActiveUsers = averageActiveSessionUsers.reduce(
-      (sum, entry) => sum + entry._count.user_id,
-      0
-    );
+    const userIdSet = new Set();
+    const totalDays = 7;
+    const totalActiveUsers = averageActiveSessionUsers.reduce((sum, entry) => {
+      const keyset = `${entry.user_id}-${new Date(
+        entry.created_at
+      ).toLocaleDateString()}`;
+      if (userIdSet.has(keyset)) {
+        return sum + 0;
+      } else {
+        userIdSet.add(keyset);
+        return sum + 1;
+      }
+    }, 0);
     const averageActiveSessionUsersLast7Days =
       totalDays > 0 ? totalActiveUsers / totalDays : 0;
 
     return {
       total_users: totalUsers,
       active_users_today: activeUsersToday.length,
-      average_active_users_last_7_days: averageActiveSessionUsersLast7Days,
+      average_active_users_last_7_days:
+        averageActiveSessionUsersLast7Days.toFixed(2),
     };
   }
 

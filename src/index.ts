@@ -20,13 +20,16 @@ declare global {
 const app = express();
 const PORT = process.env.PORT;
 
-app.use(
-  cors({
-    credentials: true,
-  })
-);
+const options: cors.CorsOptions = {
+  credentials: true,
+  methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
+  origin: process.env.FE_PATH || 'http://localhost:3000',
+  preflightContinue: true,
+};
 
 app.use(cookieParser());
+app.use(cors(options));
+
 app.use(bodyParser.json());
 app.use(router);
 

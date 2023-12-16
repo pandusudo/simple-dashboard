@@ -3,6 +3,7 @@ import { UserService } from '../services/user.service';
 import { ResponseHandler } from '../helpers/response-handler';
 import { hashWithBcrypt } from '../helpers/hash';
 import { AuthService } from '../services/auth.service';
+import { cookieSettings } from '../configs/cookie';
 
 export class UserController {
   static async getAllUsers(req: Request, res: Response): Promise<void> {
@@ -64,9 +65,7 @@ export class UserController {
       );
       const { hashedSessionId, user, isDifferentUser } = data;
       if (!req.cookies.session_id) {
-        res.cookie('session_id', hashedSessionId, {
-          httpOnly: true,
-        });
+        res.cookie('session_id', hashedSessionId, cookieSettings);
       }
       ResponseHandler.success(res, 200, 'Your email is verified!', {
         id: user.id,
