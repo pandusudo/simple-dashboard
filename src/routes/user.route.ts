@@ -12,6 +12,20 @@ userRouter.get(
   UserMiddleware.isVerified,
   UserController.getAllUsers
 );
+userRouter.put(
+  '/users',
+  AuthMiddleware.isAuthenticated,
+  UserMiddleware.isVerified,
+  DtoMiddleware.validateUpdateUserDto,
+  UserController.editUser
+);
+userRouter.put(
+  '/users/reset-password',
+  AuthMiddleware.isAuthenticated,
+  UserMiddleware.isVerified,
+  DtoMiddleware.validateUpdatePasswordDto,
+  UserController.resetPassword
+);
 userRouter.get(
   '/users/dashboard',
   AuthMiddleware.isAuthenticated,

@@ -6,6 +6,8 @@ import { ResponseHandler } from '../helpers/response-handler';
 import { VerifyEmailUserDTO } from '../dtos/user/verify-email-user.dto';
 import { BadRequestError } from '../helpers/errors/BadRequestError';
 import { SigninGoogleDTO } from '../dtos/auth/signin-google.dto';
+import { ResetPasswordUserDTO } from '../dtos/user/reset-password-user.dto';
+import { UpdateUserDTO } from '../dtos/user/edit-user.dto';
 
 export class DtoMiddleware {
   static async validateSignupDto(
@@ -53,6 +55,32 @@ export class DtoMiddleware {
     next: NextFunction
   ): Promise<void> {
     const errors = await validateDto(VerifyEmailUserDTO, req.body);
+    if (errors.length > 0) {
+      ResponseHandler.handleErrors(res, new BadRequestError(errors));
+    } else {
+      next();
+    }
+  }
+
+  static async validateUpdatePasswordDto(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const errors = await validateDto(ResetPasswordUserDTO, req.body);
+    if (errors.length > 0) {
+      ResponseHandler.handleErrors(res, new BadRequestError(errors));
+    } else {
+      next();
+    }
+  }
+
+  static async validateUpdateUserDto(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const errors = await validateDto(UpdateUserDTO, req.body);
     if (errors.length > 0) {
       ResponseHandler.handleErrors(res, new BadRequestError(errors));
     } else {

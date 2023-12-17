@@ -9,16 +9,7 @@ import { IsSameAs } from '../../decorators/is-same-as';
 
 export class ResetPasswordUserDTO {
   @IsString()
-  @MinLength(8)
-  @IsNotEmpty()
   @IsDefined()
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-    {
-      message:
-        'password must contain at least one lowercase, one uppercase, one digit, and one special character',
-    }
-  )
   old_password: string;
 
   @IsString()

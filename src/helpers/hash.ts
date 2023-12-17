@@ -5,11 +5,11 @@ export function hashWithBcrypt(password: string): string {
   return bcrypt.hashSync(password, 10);
 }
 
-export function validateBcryptHash(
+export async function validateBcryptHash(
   password: string,
   hash: string
 ): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+  return await bcrypt.compare(password, hash);
 }
 
 export function hashWithCrypto(sessionId: string): string {

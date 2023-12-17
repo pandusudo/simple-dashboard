@@ -9,12 +9,14 @@ import { UserTokenService } from './user-token.service';
 import { VerifyEmailUserDTO } from '../dtos/user/verify-email-user.dto';
 import { NotFoundError } from '../helpers/errors/NotFoundError';
 import { BadRequestError } from '../helpers/errors/BadRequestError';
-import { hashWithCrypto } from '../helpers/hash';
+import { hashWithCrypto, validateBcryptHash } from '../helpers/hash';
 import { QueryDTO } from '../dtos/query.dto';
 import { UpdateUserDTO } from '../dtos/user/edit-user.dto';
 import { sessionConfig, userTokenConfig } from '../configs/common';
 import { Session } from '../custom-types/session';
 import { throwError } from '../helpers/error-thrower';
+import { MetadataInterface } from '../interfaces/metadata.interface';
+import { UnauthorizedError } from '../helpers/errors/UnauthorizedError';
 
 export class UserService {
   private static serviceName: string = 'User';
@@ -81,12 +83,14 @@ export class UserService {
     };
   }
 
-  static async getAll(payload: QueryDTO): Promise<Partial<User>[]> {
+  static async getAll(
+    payload: QueryDTO
+  ): Promise<{ users: Partial<User>[]; metadata: MetadataInterface }> {
     let { page, limit } = payload;
 
     // check if the page or limit is less than 1. if true, change the page or limit to the default value.
-    page = page >= 1 ? page : 1;
-    limit = limit >= 1 ? limit : 25;
+    page = page >= 1 ? Number(page) : 1;
+    limit = limit >= 1 ? Number(limit) : 10;
 
     try {
       const users = await prisma.user.findMany({
@@ -101,7 +105,15 @@ export class UserService {
         take: limit,
         skip: (page - 1) * limit,
       });
-      return users;
+      const totalUsers = await prisma.user.count();
+
+      const metadata: MetadataInterface = {
+        page,
+        limit,
+        totalCount: totalUsers,
+      };
+
+      return { users, metadata };
     } catch (error) {
       throwError(error, this.serviceName);
     }
@@ -127,6 +139,34 @@ export class UserService {
       const user = await this.findOneWhere({ id });
 
       return user;
+    } catch (error) {
+      throwError(error, this.serviceName);
+    }
+  }
+
+  static async validateOldPassword(
+    id: number,
+    password: string
+  ): Promise<void> {
+    try {
+      const includePassword = true;
+      const user = await UserService.findOneWhere(
+        {
+          id,
+        },
+        includePassword
+      );
+
+      if (!user || !user.password)
+        throw new UnauthorizedError('Invalid old password!');
+
+      const isCorrectPassword = await validateBcryptHash(
+        password,
+        user.password
+      );
+
+      if (!isCorrectPassword)
+        throw new UnauthorizedError('Invalid old password!');
     } catch (error) {
       throwError(error, this.serviceName);
     }

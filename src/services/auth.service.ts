@@ -76,7 +76,7 @@ export class AuthService {
       if (!user || !user.password)
         throw new UnauthorizedError('Invalid email or password!');
 
-      const isCorrectPassword = validateBcryptHash(
+      const isCorrectPassword = await validateBcryptHash(
         payload.password,
         user.password
       );

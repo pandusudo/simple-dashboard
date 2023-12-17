@@ -8,8 +8,14 @@ import { cookieSettings } from '../configs/cookie';
 export class UserController {
   static async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
-      const users = await UserService.getAll(req.query);
-      ResponseHandler.success(res, 200, 'Success get all users', users);
+      const { users, metadata } = await UserService.getAll(req.query);
+      ResponseHandler.success(
+        res,
+        200,
+        'Success get all users',
+        users,
+        metadata
+      );
     } catch (error) {
       ResponseHandler.handleErrors(res, error);
     }
@@ -47,7 +53,9 @@ export class UserController {
   static async resetPassword(req: Request, res: Response): Promise<void> {
     try {
       const password = req.body.password;
+      const oldPassword = req.body.old_password;
       const id = req.user.id;
+      await UserService.validateOldPassword(id, oldPassword);
       await UserService.update(id, { password: hashWithBcrypt(password) });
       await AuthService.logout(id);
       res.clearCookie('session_id');

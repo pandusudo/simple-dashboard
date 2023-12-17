@@ -58,7 +58,7 @@ export class SessionService {
     try {
       const currentDate = new Date();
       if (!hashedSessionId)
-        throw new UnauthorizedError("You're not allowed to access this API");
+        throw new UnauthorizedError('Your session has expired');
 
       const includeUser = true;
       const session = await this.findOneWhere(
@@ -69,8 +69,7 @@ export class SessionService {
         includeUser
       );
 
-      if (!session)
-        throw new UnauthorizedError("You're not allowed to access this API");
+      if (!session) throw new UnauthorizedError('Your session has expired');
 
       // auth is inactive if the user.signed_in_at is null or the user user.is_logged_in is false
       const isInactiveAuth =
@@ -87,7 +86,7 @@ export class SessionService {
           { id: session.user_id },
           { is_logged_in: false, signed_in_at: null }
         );
-        throw new UnauthorizedError("You're not allowed to access this API");
+        throw new UnauthorizedError('Your session has expired');
       }
 
       // check if the session is expired or not
