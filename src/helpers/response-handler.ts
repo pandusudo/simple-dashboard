@@ -4,6 +4,7 @@ import { UnauthorizedError } from './errors/UnauthorizedError';
 import { NotFoundError } from './errors/NotFoundError';
 import { BadRequestError } from './errors/BadRequestError';
 import { ForbiddenAccessError } from './errors/ForbiddenAccessError';
+import { TooManyRequestsError } from './errors/TooManyRequestsError';
 
 export class ResponseHandler {
   static success<T>(
@@ -56,6 +57,13 @@ export class ResponseHandler {
     this.error(res, 404, error.message);
   }
 
+  static handleTooManyRequestsError(
+    res: Response,
+    error: TooManyRequestsError
+  ) {
+    this.error(res, 429, error.message);
+  }
+
   static handleGenericError(res: Response, error: Error) {
     this.error(res, 500, error.message);
   }
@@ -67,6 +75,7 @@ export class ResponseHandler {
         NotFoundError: this.handleNotFoundError.bind(this, res),
         BadRequestError: this.handleBadRequestError.bind(this, res),
         ForbiddenAccessError: this.handleForbiddenAccessError.bind(this, res),
+        TooManyRequestsError: this.handleTooManyRequestsError.bind(this, res),
       };
 
     const errorHandler =

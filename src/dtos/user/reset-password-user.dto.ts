@@ -1,6 +1,7 @@
 import {
   IsDefined,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MinLength,
@@ -9,8 +10,8 @@ import { IsSameAs } from '../../decorators/is-same-as';
 
 export class ResetPasswordUserDTO {
   @IsString()
-  @IsDefined()
-  old_password: string;
+  @IsOptional()
+  old_password?: string;
 
   @IsString()
   @IsNotEmpty()

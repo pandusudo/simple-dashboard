@@ -3,6 +3,7 @@ import { UserController } from '../controllers/user.controller';
 import express from 'express';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { UserMiddleware } from '../middlewares/user.middleware';
+import { RateLimiterMiddleware } from '../middlewares/rate-limiter.middleware';
 
 const userRouter = express.Router();
 
@@ -45,6 +46,7 @@ userRouter.post(
 );
 userRouter.post(
   '/users/resend-email-verification',
+  RateLimiterMiddleware.checkRateLimit(15, 5),
   AuthMiddleware.isAuthenticated,
   UserController.resendVerifyEmail
 );

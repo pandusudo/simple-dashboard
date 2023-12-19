@@ -55,7 +55,10 @@ export class UserController {
       const password = req.body.password;
       const oldPassword = req.body.old_password;
       const id = req.user.id;
-      await UserService.validateOldPassword(id, oldPassword);
+      const passwordIsSet = req.user.password_is_set;
+      if (passwordIsSet && oldPassword) {
+        await UserService.validateOldPassword(id, oldPassword);
+      }
       await UserService.update(id, { password: hashWithBcrypt(password) });
       await AuthService.logout(id);
       res.clearCookie('session_id');

@@ -11,7 +11,7 @@ import { Session } from './custom-types/session';
 declare global {
   namespace Express {
     interface Request {
-      user?: Partial<User>;
+      user?: Partial<User> & { password_is_set: boolean };
       session?: Partial<Session>;
     }
   }

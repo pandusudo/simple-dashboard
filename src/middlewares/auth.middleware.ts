@@ -25,6 +25,7 @@ export class AuthMiddleware {
         name: session.user.name,
         email: session.user.email,
         verified_at: session.user.verified_at,
+        password_is_set: !!session.user.password,
       };
 
       // if new session created, update session id cookie with the new session id
