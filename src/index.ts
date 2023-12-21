@@ -27,6 +27,7 @@ const options: cors.CorsOptions = {
   preflightContinue: true,
 };
 
+app.set('trust proxy', 1);
 app.use(cookieParser());
 app.use(cors(options));
 
