@@ -2,10 +2,11 @@ import { mailTransporter } from '../configs/mailer';
 import * as ejs from 'ejs';
 import fs from 'fs';
 import path from 'path';
-
 import { Transporter } from 'nodemailer';
+import { throwError } from '../helpers/error-thrower';
 
 export class EmailService {
+  private static serviceName: string = 'Mail';
   private static transporter: Transporter = mailTransporter;
 
   private constructor() {}
@@ -27,7 +28,7 @@ export class EmailService {
 
       this.sendEmail(to, 'Email verification', emailBody);
     } catch (error) {
-      console.error(error);
+      throwError(error, this.serviceName);
     }
   }
 
@@ -42,7 +43,7 @@ export class EmailService {
 
       this.transporter.sendMail(mailOptions);
     } catch (error) {
-      console.error(error);
+      throwError(error, this.serviceName);
     }
   }
 }

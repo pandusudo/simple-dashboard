@@ -36,12 +36,6 @@ export class AuthService {
       const token = generateRandomString();
       const encryptedToken = encryptWithCipher(token);
 
-      EmailService.sendVerificationEmail(
-        payload.email,
-        payload.name,
-        encryptedToken
-      );
-
       const expiryDate = userTokenConfig.getExpiryDate(currentDate);
 
       await UserTokenService.create({
@@ -51,6 +45,12 @@ export class AuthService {
         type: 'email-verification',
         active: true,
       });
+
+      EmailService.sendVerificationEmail(
+        payload.email,
+        payload.name,
+        encryptedToken
+      );
 
       return user;
     } catch (error) {
