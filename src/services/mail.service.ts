@@ -15,7 +15,7 @@ export class EmailService {
     try {
       const templatePath = path.join(
         __dirname,
-        '..',
+        '../..',
         'templates',
         'verify-email.ejs'
       );
