@@ -7,7 +7,7 @@ if (process.env.MAILER_USERNAME && process.env.MAILER_USERNAME !== '') {
 }
 
 if (process.env.MAILER_PASSWORD && process.env.MAILER_PASSWORD !== '') {
-  auth['password'] = process.env.MAILER_PASSWORD;
+  auth['pass'] = process.env.MAILER_PASSWORD;
 }
 
 const smtpConfig = {
