@@ -45,7 +45,7 @@ export class AuthController {
       const id = req.user.id;
       await AuthService.logout(id);
 
-      res.clearCookie('session_id');
+      res.clearCookie('session_id', cookieSettings);
 
       ResponseHandler.success(res, 200, "You're logged out!");
     } catch (error) {

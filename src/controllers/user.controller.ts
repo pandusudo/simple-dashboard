@@ -61,7 +61,7 @@ export class UserController {
       }
       await UserService.update(id, { password: hashWithBcrypt(password) });
       await AuthService.logout(id);
-      res.clearCookie('session_id');
+      res.clearCookie('session_id', cookieSettings);
       ResponseHandler.success(res, 200, 'Success reset password');
     } catch (error) {
       ResponseHandler.handleErrors(res, error);

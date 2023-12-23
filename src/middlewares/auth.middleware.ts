@@ -35,7 +35,7 @@ export class AuthMiddleware {
       next();
     } catch (error) {
       if (error instanceof UnauthorizedError && req.cookies.session_id) {
-        res.clearCookie('session_id');
+        res.clearCookie('session_id', cookieSettings);
       }
       ResponseHandler.handleErrors(res, error);
     }
