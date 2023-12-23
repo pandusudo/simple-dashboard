@@ -66,8 +66,36 @@ Before you begin, make sure you have the following installed on your machine:
 
    This will start the development server with automatic TypeScript compilation and nodemon for hot-reloading.
 
+## Database Schema
+
+![Database Schema](./docs/database-schema.png)
+
+### User Table
+
+Store data related to user.
+
+- **Relationships:**
+  - One-to-Many with `Session` table: A user can have multiple sessions.
+  - One-to-Many with `UserToken` table: A user can have multiple tokens.
+
+### Session Table
+
+Store data related to user session to keep track of user session history.
+
+- **Relationships:**
+  - Many-to-One with `User` table: Many sessions belong to one user.
+
+### UserToken Table
+
+Store data related to email verification token including the active status and expiry date.
+
+- **Relationships:**
+  - Many-to-One with `User` table: Many tokens belong to one user.
+
 ## Postman Documentation
 
 Explore the API using [Postman](https://www.postman.com/):
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/8908403/2s9Ykrc1A8)
+
+**NOTE: Please make sure to change the environment in Postman to Production**
