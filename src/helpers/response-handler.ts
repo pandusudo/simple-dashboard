@@ -5,6 +5,7 @@ import { NotFoundError } from './errors/NotFoundError';
 import { BadRequestError } from './errors/BadRequestError';
 import { ForbiddenAccessError } from './errors/ForbiddenAccessError';
 import { TooManyRequestsError } from './errors/TooManyRequestsError';
+import { isJsonString } from './string';
 
 export class ResponseHandler {
   static success<T>(
@@ -39,7 +40,10 @@ export class ResponseHandler {
   }
 
   static handleBadRequestError(res: Response, error: BadRequestError) {
-    this.error(res, 400, JSON.parse(error.message));
+    const errorMessage = isJsonString(error.message)
+      ? JSON.parse(error.message)
+      : error.message;
+    this.error(res, 400, errorMessage);
   }
 
   static handleUnauthorizedError(res: Response, error: UnauthorizedError) {

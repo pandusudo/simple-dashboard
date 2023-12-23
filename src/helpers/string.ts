@@ -10,3 +10,12 @@ export function generateRandomString(length: number = 16): string {
 
   return randomString;
 }
+
+export function isJsonString(str: string): boolean {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
