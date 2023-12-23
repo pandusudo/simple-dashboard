@@ -16,6 +16,7 @@ import { SessionService } from './sessions.service';
 import { sessionConfig, userTokenConfig } from '../configs/common';
 import { throwError } from '../helpers/error-thrower';
 import { SigninGoogleDTO } from '../dtos/auth/signin-google.dto';
+import { verifyGoogleToken } from '../helpers/google';
 
 export class AuthService {
   private static serviceName: string = 'Auth';
@@ -123,20 +124,22 @@ export class AuthService {
     hashedSessionId: string;
   }> {
     try {
+      const { email, name } = await verifyGoogleToken(payload.token);
+
       let userId = null;
       let verifiedAt = null;
       const currentDate = new Date();
       const expiryDate = sessionConfig.getExpiryDate(currentDate);
 
       const user = await UserService.findOneWhere({
-        email: payload.email,
+        email,
       });
 
       if (!user) {
         const newUser = await UserService.create({
-          email: payload.email,
+          email,
           password: null,
-          name: payload.name,
+          name,
           signed_up_at: currentDate,
           login_counter: 1,
           signed_in_at: currentDate,

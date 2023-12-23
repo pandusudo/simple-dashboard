@@ -1,18 +1,8 @@
-import {
-  IsDefined,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDefined, IsNotEmpty, IsString } from 'class-validator';
 
 export class SigninGoogleDTO {
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
   @IsDefined()
-  email: string;
-
-  @IsString()
-  @IsOptional()
-  name?: string;
+  token: string;
 }
