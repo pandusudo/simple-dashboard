@@ -72,6 +72,16 @@ export class ResponseHandler {
     this.error(res, 500, error.message);
   }
 
+  /**
+   * The function `handleErrors` handles different types of errors and calls the appropriate error
+   * handler based on the error type.
+   * @param {Response} res - The `res` parameter is an instance of the `Response` class, which
+   * represents the HTTP response that will be sent back to the client.
+   * @param {Error} error - The `error` parameter is an instance of the `Error` class, which represents
+   * an error that occurred during the execution of the code. It can be any type of error, such as an
+   * `UnauthorizedError`, `NotFoundError`, `BadRequestError`, `ForbiddenAccessError`, or
+   * `TooManyRequests
+   */
   static handleErrors(res: Response, error: Error) {
     const errorHandlers: Record<string, (res: Response, error: Error) => void> =
       {

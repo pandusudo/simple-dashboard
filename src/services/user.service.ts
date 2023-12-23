@@ -19,9 +19,19 @@ import { MetadataInterface } from '../interfaces/metadata.interface';
 import { UnauthorizedError } from '../helpers/errors/UnauthorizedError';
 
 export class UserService {
+  // Descriptive name for the service
   private static serviceName: string = 'User';
 
-  static async getUserDashboard(): Promise<any> {
+  /**
+   * The function `getUserDashboard` retrieves statistics about the total number of users, active users
+   * today, and average active users over the last 7 days.
+   * @returns The function `getUserDashboard` returns an object with the following properties:
+   */
+  static async getUserDashboard(): Promise<{
+    total_users: number;
+    active_users_today: number;
+    average_active_users_last_7_days: string;
+  }> {
     const totalUsers = await prisma.user.count();
 
     const startOfDay = new Date();
@@ -83,6 +93,13 @@ export class UserService {
     };
   }
 
+  /**
+   * The function retrieves a list of users from a
+   * database, with pagination and metadata.
+   * @param {QueryDTO} payload - The payload parameter is an object of type QueryDTO. It contains the
+   * following properties:
+   * @returns an object with two properties: `users` and `metadata`.
+   */
   static async getAll(
     payload: QueryDTO
   ): Promise<{ users: Partial<User>[]; metadata: MetadataInterface }> {
@@ -119,6 +136,13 @@ export class UserService {
     }
   }
 
+  /**
+   * The function creates a new user in the database and returns the created user object with the
+   * password excluded.
+   * @param payload - The `payload` parameter is an object of type `Prisma.UserCreateInput`. It
+   * contains the data needed to create a new user.
+   * @returns a `Promise` that resolves to a Partial `User` object.
+   */
   static async create(payload: Prisma.UserCreateInput): Promise<Partial<User>> {
     try {
       const user = await prisma.user.create({ data: payload });
@@ -129,6 +153,14 @@ export class UserService {
     }
   }
 
+  /**
+   * The `update` function updates a user's information in the database and returns the updated user.
+   * @param {number} id - The `id` parameter is a number that represents the unique identifier of the
+   * user that needs to be updated.
+   * @param {UpdateUserDTO | { password: string }} payload - The `payload` parameter can be of two
+   * types:
+   * @returns a Promise that resolves to a Partial<User> object.
+   */
   static async update(
     id: number,
     payload: UpdateUserDTO | { password: string }
@@ -144,6 +176,14 @@ export class UserService {
     }
   }
 
+  /**
+   * The function `validateOldPassword` is used to validate if a given password matches the old
+   * password of a user with a specific ID.
+   * @param {number} id - The id parameter is the unique identifier of the user whose password needs to
+   * be validated. It is of type number.
+   * @param {string} password - The `password` parameter is a string that represents the old password
+   * that needs to be validated.
+   */
   static async validateOldPassword(
     id: number,
     password: string
@@ -172,6 +212,16 @@ export class UserService {
     }
   }
 
+  /**
+   * The function updates a user in the database based on a unique input and returns the updated user.
+   * @param payload - The `payload` parameter is an object that specifies the unique identifier of the
+   * user you want to update. It typically contains properties such as `id` or `email` that uniquely
+   * identify the user in the database.
+   * @param data - The `data` parameter is an object that contains the fields and values that you want
+   * to update for the user. It should be of type `Prisma.UserUpdateInput`, which is a generated type
+   * based on your Prisma schema. This object should have the same structure as your user model, with
+   * @returns a Promise that resolves to a User object.
+   */
   static async updateWhere(
     payload: Prisma.UserWhereUniqueInput,
     data: Prisma.UserUpdateInput
@@ -188,6 +238,19 @@ export class UserService {
     }
   }
 
+  /**
+   * The function `findOneWhere` finds a user based on a given payload and
+   * returns the user object, excluding the password if `includePassword` is set to false.
+   * @param payload - The `payload` parameter is an object that represents the conditions to be used in
+   * the `WHERE` clause of the database query. It is of type `Prisma.UserWhereInput`, which is a
+   * Prisma-generated type that defines the available fields and operators for filtering the `User`
+   * model.
+   * @param {boolean} [includePassword=false] - The `includePassword` parameter is a boolean flag that
+   * determines whether the `password` field should be included in the returned user object. By
+   * default, it is set to `false`, meaning that the `password` field will be excluded from the
+   * returned user object.
+   * @returns a `Promise` that resolves to a Partial `User` object.
+   */
   static async findOneWhere(
     payload: Prisma.UserWhereInput,
     includePassword: boolean = false
@@ -205,6 +268,12 @@ export class UserService {
     }
   }
 
+  /**
+   * The function `resendVerifyEmail` sends a verification email to a user, deactivates all previous
+   * verification tokens for the user, and creates a new verification token.
+   * @param user - The `user` parameter is an object that represents a user. It contains the following
+   * properties:
+   */
   static async resendVerifyEmail(user: Partial<User>): Promise<void> {
     try {
       const token = generateRandomString();
@@ -233,6 +302,18 @@ export class UserService {
     }
   }
 
+  /**
+   * The `verifyEmail` function verifies the email of a user by decrypting a token, checking its
+   * validity, updating user information, creating a new session if necessary, and deactivating all
+   * email verification tokens for the user.
+   * @param {VerifyEmailUserDTO} payload - The `payload` parameter is an object that contains the
+   * necessary information for verifying an email. It typically includes a `token` property, which is a
+   * token received from the user for email verification.
+   * @param {string} [oldHashedSessionId=null] - The `oldHashedSessionId` parameter is a string that
+   * represents the hashed session ID of the user's previous session. It is an optional parameter and
+   * its default value is `null`.
+   * @returns an object with the following properties:
+   */
   static async verifyEmail(
     payload: VerifyEmailUserDTO,
     oldHashedSessionId: string = null
@@ -243,8 +324,13 @@ export class UserService {
     isDifferentUser: boolean;
   }> {
     try {
+      // Decrypt the token received in the payload
       const token = decryptWithCipher(payload.token);
+
+      // Set the flag to include user information in the query result
       const includeUser = true;
+
+      // Find the user token based on the decrypted token
       const userToken = await UserTokenService.findOneWhere(
         {
           token,
@@ -254,17 +340,24 @@ export class UserService {
         includeUser
       );
 
-      if (!userToken) throw new NotFoundError("Your token doesn't exist");
+      // Throw an error if the user token doesn't exist
+      if (!userToken) {
+        throw new NotFoundError("Your token doesn't exist");
+      }
 
+      // Check if the token is expired or inactive
       const currentDate = new Date();
       const isExpired = currentDate > userToken.expired_at;
       const isInactive = !userToken.active;
 
-      if (isExpired || isInactive)
+      // Throw an error if the token is expired or inactive
+      if (isExpired || isInactive) {
         throw new BadRequestError(
           JSON.stringify({ message: 'Your token is expired' })
         );
+      }
 
+      // Initialize variables for old session and user
       let oldSession: Session = null;
       if (oldHashedSessionId) {
         oldSession = await SessionService.findOneWhere(
@@ -278,6 +371,7 @@ export class UserService {
       let hashedSessionId: string;
       let isDifferentUser: boolean = false;
 
+      // If an old session exists, update user information
       if (oldSession) {
         user = await this.updateWhere(
           { id: userToken.user_id },
@@ -287,7 +381,7 @@ export class UserService {
         hashedSessionId = oldHashedSessionId;
         session = oldSession;
       } else {
-        // update verified at and increase the login counter for the user
+        // If no old session exists, update user information and create a new session
         user = await this.updateWhere(
           { id: userToken.user_id },
           {
@@ -299,9 +393,13 @@ export class UserService {
           }
         );
 
+        // Generate a hashed session ID for the new session
         hashedSessionId = hashWithCrypto(JSON.stringify({ id: user.id }));
+
+        // Set the expiry date for the new session
         const expiryDate = sessionConfig.getExpiryDate(currentDate);
 
+        // Create a new session
         session = await SessionService.create({
           user_id: user.id,
           expired_at: expiryDate,
@@ -310,12 +408,13 @@ export class UserService {
         });
       }
 
-      // deactivate all email verification tokens for this user
+      // Deactivate all email verification tokens for this user
       await UserTokenService.updateManyWhere(
         { user_id: user.id },
         { active: false }
       );
 
+      // Return the updated user and session information
       return {
         user,
         session,

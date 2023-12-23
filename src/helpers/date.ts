@@ -24,6 +24,18 @@ export function addDaysToDate(baseDate: Date, daysToAdd: number): Date {
   return resultDate;
 }
 
+/**
+ * The function `generateExpiryDate` takes a base date, a duration, and a unit of time, and returns an
+ * expiry date by adding the specified duration to the base date.
+ * @param {Date} baseDate - The baseDate parameter is the starting date from which the expiry date will
+ * be calculated.
+ * @param {number} duration - The duration parameter represents the amount of time to add to the
+ * baseDate. It is a number that specifies the duration in the unit of time specified by the unitOfTime
+ * parameter.
+ * @param {UnitOfTime} unitOfTime - The `unitOfTime` parameter is an enum that represents the unit of
+ * time for the duration. It can have the following values:
+ * @returns the expiry date as a Date object.
+ */
 export function generateExpiryDate(
   baseDate: Date,
   duration: number,
