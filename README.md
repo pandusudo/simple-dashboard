@@ -10,9 +10,9 @@ This guide will walk you through setting up a Simple Dashboard Project in your l
 
 Before you begin, make sure you have the following installed on your machine:
 
-- [Node.js](https://nodejs.org/) (v14 or higher)
-- [npm](https://www.npmjs.com/) (v6 or higher)
-- [PostgreSQL](https://www.postgresql.org/) (v10 or higher)
+- [Node.js](https://nodejs.org/) (v20 recommended)
+- [npm](https://www.npmjs.com/) (v10 recommended)
+- [PostgreSQL](https://www.postgresql.org/) (v14 or higher)
 
 ## Project Setup
 
