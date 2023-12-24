@@ -80,14 +80,14 @@ Store data related to user.
 
 ### Session Table
 
-Store data related to user session to keep track of user session history.
+Store data related to user session to keep track of user session history. By default, user sessions is set to expire after 5 minutes. If a session expires, the app will automatically generate a new session for the user. However, it's important to note that session generation is restricted to authentication sessions that endure for 30 days. As long as the authentication session remains active and has not expired, the possibility of generating new sessions persists.
 
 - **Relationships:**
   - Many-to-One with `User` table: Many sessions belong to one user.
 
 ### UserToken Table
 
-Store data related to email verification token including the active status and expiry date.
+Store data related to email verification token including the active status and expiry date. Email verification tokens have a default expiration period of 30 minutes.
 
 - **Relationships:**
   - Many-to-One with `User` table: Many tokens belong to one user.

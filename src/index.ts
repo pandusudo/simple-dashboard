@@ -36,6 +36,6 @@ app.use(router);
 
 const server = http.createServer(app);
 
-server.listen(PORT, () => {
+module.exports = server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
