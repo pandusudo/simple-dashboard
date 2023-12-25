@@ -94,7 +94,7 @@ Store data related to email verification token including the active status and e
 
 ## Postman Documentation
 
-Explore the API using [Postman](https://www.postman.com/):
+Swagger UI does not support HTTP only cookie authentication so I decided to use Postman instead. Explore the API using [Postman](https://www.postman.com/):
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/8908403/2s9Ykrc1A8)
 
